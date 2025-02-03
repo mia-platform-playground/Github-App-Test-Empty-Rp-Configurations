@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-visualization
+  annotations:
+    mia-platform.eu/version: 13.0.0
+  labels:
+    app: data-visualization
+    app.kubernetes.io/name: data-visualization
+    app.kubernetes.io/version: 1.8.2
+    app.kubernetes.io/component: custom
+    app.kubernetes.io/part-of: github-app-test-empty
+    app.kubernetes.io/managed-by: mia-platform
+    mia-platform.eu/stage: DEV
+    mia-platform.eu/tenant: rocket-playground
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: null
+  selector:
+    app: data-visualization

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-visualization
+  annotations:
+    mia-platform.eu/version: 13.0.0
+    fluentbit.io/parser: nginx
+  labels:
+    app: data-visualization
+    app.kubernetes.io/name: data-visualization
+    app.kubernetes.io/version: 1.8.2
+    app.kubernetes.io/component: custom
+    app.kubernetes.io/part-of: github-app-test-empty
+    app.kubernetes.io/managed-by: mia-platform
+    mia-platform.eu/stage: DEV
+    mia-platform.eu/tenant: rocket-playground
+    mia-platform.eu/log-type: mia-nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-visualization
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 1
+  template:
+    metadata:
+      annotations:
+        mia-platform.eu/version: 13.0.0
+        fluentbit.io/parser: nginx
+      labels:
+        app: data-visualization
+        app.kubernetes.io/name: data-visualization
+        app.kubernetes.io/version: 1.8.2
+        app.kubernetes.io/component: custom
+        app.kubernetes.io/part-of: github-app-test-empty
+        app.kubernetes.io/managed-by: mia-platform
+        mia-platform.eu/stage: DEV
+        mia-platform.eu/tenant: rocket-playground
+        mia-platform.eu/log-type: mia-nginx
+    spec:
+      imagePullSecrets:
+        - name: nexus-gcloud
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: data-visualization
+          image: nexus.mia-platform.eu/backoffice/data-visualization:1.8.2
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 150Mi
+              cpu: 100m
+            requests:
+              memory: 150Mi
+              cpu: 100m
+          volumeMounts: []
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          args: []
+          env:
+            - name: HTTP_PORT
+              value: '8080'
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+            httpGet:
+              port: http
+              path: /-/ready
+          livenessProbe:
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            timeoutSeconds: 1
+            failureThreshold: 3
+            httpGet:
+              port: http
+              path: /-/healthz
+      volumes: []
